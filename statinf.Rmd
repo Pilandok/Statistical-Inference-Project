@@ -1,0 +1,69 @@
+---
+title: "Statistical Inference Project"
+author: "Odin Matanguihan"
+date: "May 1, 2017"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Overview
+
+In this file, we explore the Exponential distribution function via simulation.  Data is generated and the mean distribution is plotted. The obtained result from the sample set is also compared to the expected(theoretical) results.
+
+```{r}
+lambda <- 0.2                 # We set lambda equal to 0.2,
+n <- 40                       # sample size equal to 40,
+ns <- 1000                    # number of sample sets equal to 1000
+sd <- 1/lambda                # standard deviation
+theoretical.mean = 1/lambda   # expected mean by definition
+theoretical.var = 1/lambda^2  # expected variance by definition
+```
+
+We now generate the data and compute for the sample means and sample variance.
+
+```{r}
+
+x = NULL
+rexp.data <- matrix(nrow = ns, ncol = 2)
+set.seed(666)  #set seed for reproducibility
+for(i in 1:ns){x <- rexp(n, lambda)
+      rexp.data[i,1] <- mean(x) #mean is computed separately for each sample set
+      rexp.data[i,2] <- var(x)} #variance is computed separately for each sample set
+sample.mean <- mean(rexp.data[,1])     #compute for the mean of the means
+sample.var <- mean(rexp.data[,2])      #compute for the mean of variance
+cat("The theoretical mean is", theoretical.mean,
+    ", the mean from the generated sample set is", sample.mean, ".")
+cat("The theoretical variance is", theoretical.var,
+    ", the variance obtained from the sample set is", sample.var, ".")
+
+```
+
+
+
+
+
+
+## The distribution of the Exponential Distribution Function
+
+
+```{r}
+
+hist(rexp(1000, .2), breaks = 100, main = "Exponential Distribution function", xlab = "Rexp(1000) values")
+
+```
+
+Above is the distribution of the values of the exponential distribution function, with lambda = 0.2.  It doesn't look very Gaussian.
+
+```{r}
+
+hist(rexp.data[,1], breaks = 100, prob = TRUE, 
+     main="Mean Distribution of the Exponential Function", xlab="Means")
+abline(v = theoretical.mean, col= 4, lwd = 2)
+abline(v = sample.mean, col = 2,lwd = 2)
+legend('topright', c("Sample Mean", "Theoretical Mean"), bty = "n", lty = c(1,1), col = c(col = 4, col = 2))
+```
+
+Above is the distribution of the means of the exponential distribution function from the dataset that was generated earlier.
