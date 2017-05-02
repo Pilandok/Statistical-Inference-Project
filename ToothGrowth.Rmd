@@ -1,0 +1,87 @@
+---
+title: "Inferential Analysis of effect of Vit. C on Tooth Growth"
+author: "Odin Matanguihan"
+date: "May 2, 2017"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Overview
+
+In this report, toothgrowth data is analyzed to draw inferences.  t.test() is used to analyze correlation between vit. C and tooth growth.  It is analyzed by intake type and dosage.
+
+
+
+```{r ToothGrowth}
+
+data(ToothGrowth)   #load the data
+head(ToothGrowth)
+str(ToothGrowth)
+```
+
+#Provide basic summary of data
+
+```{r}
+
+ToothGrowth$dose <- as.factor(ToothGrowth$dose)
+table(ToothGrowth$supp, ToothGrowth$dose)
+
+```
+
+
+A simple boxplot already gives a good idea of what the conclusions are going to be.
+
+```{r pressure, echo=FALSE}
+library(ggplot2)
+plot <- ggplot(ToothGrowth, aes(x=factor(dose),y=len,fill=factor(dose)))
+plot <- plot + geom_boxplot()  + facet_grid(.~supp)
+plot <- plot +  scale_x_discrete ("Dosage(in mg)") + scale_y_continuous("Tooth Length") 
+plot <- plot +  ggtitle("Effect of Dosage and Supplement Type on Tooth Growth")
+plot
+```
+
+The plot above shows that tooth growth is affected by dosage, and that OJ(orange juice) is better than VC(ascorbic acid).  The difference seems to disappear at the higher dosage of 2 mg.  We can confirm if there is a difference using a t test.  The null hypothesis here is that there is no difference.  
+
+```{r}
+
+x <- t.test(len ~ supp, paired=FALSE, var.equal=FALSE, data=ToothGrowth[ToothGrowth$dose == 0.5, ])
+x$conf.int
+x$estimate
+
+```
+
+The confidence interval does not include zero and the null hypothesis is rejected for dosage = 0.5 mg.
+
+```{r}
+
+x <- t.test(len ~ supp, paired=FALSE, var.equal=FALSE, data=ToothGrowth[ToothGrowth$dose == 1, ])
+x$conf.int
+x$estimate
+
+```
+
+For the dosage = 1 mg, the null hypothesis is also rejected.
+
+```{r}
+
+x <- t.test(len ~ supp, paired=FALSE, var.equal=FALSE, data=ToothGrowth[ToothGrowth$dose == 2, ])
+x$conf.int
+x$estimate
+
+```
+
+At dosage = 2 mg, the 95% confidence interval includes zero right in the middle.  The difference in means between the two vit C delivery sources is not statistically significant.
+
+# Conclusions
+
+1.  Higher dosages of vit. C leads to improved tooth growth.
+2.  OJ gives better tooth growth than VC.
+3.  The difference in tooth growth becomes insignificant at 2 mg. dosage
+
+# Assumptions
+
+1.  The variances between sample populations are not equal.
+2.  The sample data is not paired.
